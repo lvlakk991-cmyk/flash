@@ -17,7 +17,6 @@ app.get('/', (req, res) => {
     res.send('⚡ Сервер FLASH Studio запущен с GitHub API (native)!');
 });
 
-// Вспомогательная функция для запросов к GitHub API через встроенный https
 function githubRequest(method, endpoint, data = null) {
     return new Promise((resolve, reject) => {
         const dataStr = data ? JSON.stringify(data) : '';
@@ -51,7 +50,6 @@ function githubRequest(method, endpoint, data = null) {
     });
 }
 
-// 1. Получить данные сайта
 app.get('/api/data', async (req, res) => {
     try {
         const response = await githubRequest('GET', '/contents/data.json');
@@ -61,7 +59,6 @@ app.get('/api/data', async (req, res) => {
             return res.json(JSON.parse(content));
         }
 
-        // Если файла еще нет
         res.json({
             heroTitle: "FLASH Program Studio — Разработка сайтов и ботов",
             heroSubtitle: "Сделаем всё в лучшем виде специально для Вас",
@@ -69,11 +66,11 @@ app.get('/api/data', async (req, res) => {
             reviews: []
         });
     } catch (err) {
+        console.error('Ошибка GET /api/data:', err);
         res.status(500).json({ error: 'Ошибка загрузки с GitHub: ' + err.message });
     }
 });
 
-// 2. Сохранить данные сайта
 app.post('/api/data', async (req, res) => {
     const userPassword = req.headers['x-admin-password'];
 
@@ -82,17 +79,21 @@ app.post('/api/data', async (req, res) => {
     }
 
     try {
+        if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO) {
+            console.error('ОШИБКА: Не заданы переменные окружения GitHub на Render!');
+            return res.status(500).json({ error: 'Отсутствуют настройки GitHub в переменных окружения Render' });
+        }
+
         const newDataString = JSON.stringify(req.body, null, 2);
         const encodedContent = Buffer.from(newDataString).toString('base64');
 
-        // Сначала получаем SHA файла (если он уже существует)
         let fileSha = null;
         const checkFile = await githubRequest('GET', '/contents/data.json');
+        
         if (checkFile.status === 200 && checkFile.data.sha) {
             fileSha = checkFile.data.sha;
         }
 
-        // Отправляем изменения в репозиторий
         const payload = {
             message: 'Update site data via admin panel',
             content: encodedContent,
@@ -104,9 +105,11 @@ app.post('/api/data', async (req, res) => {
         if (updateRes.status === 200 || updateRes.status === 201) {
             res.json({ success: true });
         } else {
+            console.error('GitHub API Error response:', updateRes.data);
             res.status(500).json({ error: 'GitHub API error: ' + JSON.stringify(updateRes.data) });
         }
     } catch (err) {
+        console.error('Критическая ошибка сохранения:', err);
         res.status(500).json({ error: 'Ошибка сохранения: ' + err.message });
     }
 });
