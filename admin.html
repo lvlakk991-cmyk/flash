@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель — FLASH Studio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #0b1120; color: #f8fafc; font-family: 'Segoe UI', sans-serif; }
+        .admin-card { background-color: #151f32; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+        .form-control { background-color: #0b1120; border: 1px solid #2d3748; color: #f8fafc; }
+        .form-control:focus { background-color: #0b1120; color: #f8fafc; border-color: #0066ff; }
+        .btn-flash { background: linear-gradient(135deg, #0066ff, #00d2ff); color: #fff; border: none; font-weight: 600; }
+        .login-box { max-width: 400px; margin: 100px auto; }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen" class="container">
+        <div class="login-box admin-card text-center shadow">
+            <h3 class="mb-4"><i class="fa-solid fa-lock text-info me-2"></i>Вход в Админ-панель</h3>
+            <div class="mb-3">
+                <input type="password" id="admin-pass" class="form-control text-center" placeholder="Пароль">
+            </div>
+            <button onclick="login()" class="btn btn-flash w-100 py-2">Войти</button>
+            <div id="login-error" class="text-danger mt-3 small" style="display:none;">Неверный пароль!</div>
+        </div>
+    </div>
+
+    <div id="admin-dashboard" class="container py-5" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+            <h2>⚡ Управление сайтом FLASH</h2>
+            <div>
+                <a href="index.html" target="_blank" class="btn btn-outline-info me-2"><i class="fa-solid fa-eye me-1"></i> Просмотр сайта</a>
+                <button onclick="logout()" class="btn btn-outline-danger"><i class="fa-solid fa-right-from-bracket me-1"></i> Выйти</button>
+            </div>
+        </div>
+
+        <div id="alert-msg" class="alert alert-success" style="display: none;">Данные успешно сохранены в базе данных!</div>
+
+        <!-- Заголовок -->
+        <div class="admin-card">
+            <h4 class="mb-3 text-info">Заголовок и описание</h4>
+            <div class="mb-3">
+                <label class="form-label">Заголовок (HTML):</label>
+                <input type="text" id="heroTitleInput" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Подзаголовок:</label>
+                <textarea id="heroSubtitleInput" class="form-control" rows="3"></textarea>
+            </div>
+            <button onclick="saveHero()" class="btn btn-flash"><i class="fa-solid fa-floppy-disk me-1"></i> Сохранить заголовок</button>
+        </div>
+
+        <!-- Услуги -->
+        <div class="admin-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="text-info mb-0">Управление услугами</h4>
+                <button onclick="addService()" class="btn btn-sm btn-outline-success"><i class="fa-solid fa-plus me-1"></i> Добавить услугу</button>
+            </div>
+            <div id="services-list"></div>
+            <button onclick="saveServices()" class="btn btn-flash mt-3"><i class="fa-solid fa-floppy-disk me-1"></i> Сохранить все услуги</button>
+        </div>
+
+        <!-- Управление Отзывами -->
+        <div class="admin-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="text-info mb-0">Управление отзывами</h4>
+                <button onclick="addReview()" class="btn btn-sm btn-outline-success"><i class="fa-solid fa-plus me-1"></i> Добавить отзыв</button>
+            </div>
+            <div id="reviews-list"></div>
+            <button onclick="saveReviews()" class="btn btn-flash mt-3"><i class="fa-solid fa-floppy-disk me-1"></i> Сохранить все отзывы</button>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_PASS = "Fl@sh_2026!Sec3re";
+        // Замените этот URL на адрес вашего опубликованного бэкенда (например: https://your-app.onrender.com/api/data)
+        const API_URL = "https://flash-sdty.onrender.com/api/data";
+
+        let currentSiteData = {
+            heroTitle: "",
+            heroSubtitle: "",
+            services: [],
+            reviews: []
+        };
+
+        // Загрузка данных из серверной БД
+        async function getSiteData() {
+            try {
+                const response = await fetch(API_URL);
+                if (response.ok) {
+                    currentSiteData = await response.json();
+                }
+            } catch (error) {
+                console.error("Ошибка при получении данных с сервера/БД:", error);
+            }
+            return currentSiteData;
+        }
+
+        // Сохранение всей структуры данных в серверную БД
+        async function saveSiteData(data) {
+            currentSiteData = data;
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+                if (!response.ok) {
+                    throw new Error("Не удалось сохранить данные на сервере");
+                }
+            } catch (error) {
+                console.error("Ошибка при сохранении в БД:", error);
+                alert("Ошибка сохранения! Проверьте подключение к серверу.");
+            }
+        }
+
+        function login() {
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === ADMIN_PASS) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('admin-dashboard').style.display = 'block';
+                loadAdminData();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            document.getElementById('admin-dashboard').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('admin-pass').value = '';
+        }
+
+        function showAlert() {
+            const alert = document.getElementById('alert-msg');
+            alert.style.display = 'block';
+            setTimeout(() => { alert.style.display = 'none'; }, 3000);
+        }
+
+        async function loadAdminData() {
+            const data = await getSiteData();
+            document.getElementById('heroTitleInput').value = data.heroTitle || '';
+            document.getElementById('heroSubtitleInput').value = data.heroSubtitle || '';
+            renderServicesAdmin(data.services || []);
+            renderReviewsAdmin(data.reviews || []);
+        }
+
+        function renderServicesAdmin(services) {
+            const container = document.getElementById('services-list');
+            container.innerHTML = '';
+            services.forEach((s, index) => {
+                container.innerHTML += `
+                    <div class="p-3 border border-secondary rounded mb-3 bg-dark">
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong class="text-light">Услуга #${index + 1}</strong>
+                            <button onclick="removeService(${index})" class="btn btn-sm btn-danger py-0 px-2"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label class="small text-secondary">Название</label>
+                                <input type="text" class="form-control service-title" value="${s.title || ''}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small text-secondary">Цена</label>
+                                <input type="text" class="form-control service-price" value="${s.price || ''}">
+                            </div>
+                            <div class="col-md-5">
+                                <label class="small text-secondary">Иконка (FontAwesome класс)</label>
+                                <input type="text" class="form-control service-icon" value="${s.icon || ''}">
+                            </div>
+                            <div class="col-12 mt-2">
+                                <label class="small text-secondary">Описание</label>
+                                <textarea class="form-control service-desc" rows="2">${s.desc || ''}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderReviewsAdmin(reviews) {
+            const container = document.getElementById('reviews-list');
+            container.innerHTML = '';
+            reviews.forEach((r, index) => {
+                container.innerHTML += `
+                    <div class="p-3 border border-secondary rounded mb-3 bg-dark">
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong class="text-light">Отзыв #${index + 1}</strong>
+                            <button onclick="removeReview(${index})" class="btn btn-sm btn-danger py-0 px-2"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label class="small text-secondary">Имя клиента</label>
+                                <input type="text" class="form-control review-author" value="${r.author || ''}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small text-secondary">Инициалы (для аватарки)</label>
+                                <input type="text" class="form-control review-initials" value="${r.initials || ''}">
+                            </div>
+                            <div class="col-md-5">
+                                <label class="small text-secondary">Категория / Заказ</label>
+                                <input type="text" class="form-control review-category" value="${r.category || ''}">
+                            </div>
+                            <div class="col-12 mt-2">
+                                <label class="small text-secondary">Текст отзыва</label>
+                                <textarea class="form-control review-text" rows="2">${r.text || ''}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function saveHero() {
+            const data = await getSiteData();
+            data.heroTitle = document.getElementById('heroTitleInput').value;
+            data.heroSubtitle = document.getElementById('heroSubtitleInput').value;
+            await saveSiteData(data);
+            showAlert();
+        }
+
+        async function addService() {
+            const data = await getSiteData();
+            if(!data.services) data.services = [];
+            data.services.push({ title: "Новая услуга", price: "от 5 000 ₽", icon: "fa-solid fa-code", desc: "Описание..." });
+            await saveSiteData(data);
+            renderServicesAdmin(data.services);
+        }
+
+        async function removeService(index) {
+            const data = await getSiteData();
+            data.services.splice(index, 1);
+            await saveSiteData(data);
+            renderServicesAdmin(data.services);
+        }
+
+        async function saveServices() {
+            const data = await getSiteData();
+            const titles = document.querySelectorAll('.service-title');
+            const prices = document.querySelectorAll('.service-price');
+            const icons = document.querySelectorAll('.service-icon');
+            const descs = document.querySelectorAll('.service-desc');
+
+            const newServices = [];
+            titles.forEach((t, i) => {
+                newServices.push({ title: titles[i].value, price: prices[i].value, icon: icons[i].value, desc: descs[i].value });
+            });
+
+            data.services = newServices;
+            await saveSiteData(data);
+            showAlert();
+        }
+
+        async function addReview() {
+            const data = await getSiteData();
+            if(!data.reviews) data.reviews = [];
+            data.reviews.push({ author: "Иван С.", initials: "ИС", category: "Заказ бота", rating: 5, text: "Отличный отзыв о вашей работе..." });
+            await saveSiteData(data);
+            renderReviewsAdmin(data.reviews);
+        }
+
+        async function removeReview(index) {
+            const data = await getSiteData();
+            data.reviews.splice(index, 1);
+            await saveSiteData(data);
+            renderReviewsAdmin(data.reviews);
+        }
+
+        async function saveReviews() {
+            const data = await getSiteData();
+            const authors = document.querySelectorAll('.review-author');
+            const initials = document.querySelectorAll('.review-initials');
+            const categories = document.querySelectorAll('.review-category');
+            const texts = document.querySelectorAll('.review-text');
+
+            const newReviews = [];
+            authors.forEach((a, i) => {
+                newReviews.push({ author: authors[i].value, initials: initials[i].value, category: categories[i].value, text: texts[i].value, rating: 5 });
+            });
+
+            data.reviews = newReviews;
+            await saveSiteData(data);
+            showAlert();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLASH Studio — Разработка сайтов и ботов</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0066ff;
+            --accent-cyan: #00d2ff;
+            --dark-bg: #0b1120;
+            --card-bg: #151f32;
+            --text-light: #f8fafc;
+        }
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+        .navbar {
+            background-color: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .brand-logo {
+            font-weight: 800;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero {
+            padding: 120px 0 60px;
+            background: radial-gradient(circle at top center, rgba(0, 102, 255, 0.15) 0%, transparent 70%);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-cyan), #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card-custom {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .card-custom:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-blue);
+        }
+        .service-icon {
+            font-size: 2.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 20px;
+        }
+        .btn-flash {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-cyan));
+            color: #fff;
+            border: none;
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-flash:hover { color: #fff; opacity: 0.9; }
+        .vk-btn {
+            background-color: #0077ff;
+            color: white;
+            font-weight: 600;
+            border-radius: 30px;
+            padding: 12px 25px;
+            text-decoration: none;
+        }
+        .vk-btn:hover { background-color: #0056b3; color: white; }
+
+        /* Стили для формы заявки */
+        .form-control-custom {
+            background-color: rgba(11, 17, 32, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-light);
+            border-radius: 10px;
+            padding: 12px 16px;
+        }
+        .form-control-custom:focus {
+            background-color: rgba(11, 17, 32, 0.9);
+            border-color: var(--accent-cyan);
+            color: var(--text-light);
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand brand-logo" href="#">⚡ FLASH</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="#hero">Главная</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#services">Услуги</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#reviews">Отзывы</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contacts">Оформить заявку</a></li>
+                    <li class="nav-item ms-lg-3"><a class="btn btn-flash btn-sm px-3 py-2" href="admin.html"><i class="fa-solid fa-lock me-1"></i> Админ-панель</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Главный баннер -->
+    <section id="hero" class="hero text-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <h1 id="hero-title" class="mb-4 display-4 fw-bold"></h1>
+                    <p id="hero-subtitle" class="lead text-secondary mb-5 fs-4"></p>
+                    <a href="#contacts" class="btn btn-flash btn-lg shadow">
+                        <i class="fa-solid fa-paper-plane me-2"></i>Заказать проект
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Услуги -->
+    <section id="services" class="py-5">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold fs-1">Наши Услуги</h2>
+                <p class="text-secondary">Полный цикл разработки под ключ</p>
+            </div>
+            <div class="row g-4" id="services-container"></div>
+        </div>
+    </section>
+
+    <!-- Отзывы -->
+    <section id="reviews" class="py-5 bg-darker">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold fs-1">Отзывы Клиентов</h2>
+                <p class="text-secondary">Настоящие оценки наших клиентов и обратная связь</p>
+            </div>
+            <div class="row g-4" id="reviews-container"></div>
+        </div>
+    </section>
+
+    <!-- Форма заявки и Реквизиты -->
+    <section id="contacts" class="py-5">
+        <div class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card-custom p-4 p-md-5 shadow">
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold fs-1 mb-2">Оставить заявку</h2>
+                            <p class="text-secondary">Заполните форму, и мы получим ваше сообщение напрямую в VK!</p>
+                        </div>
+
+                        <!-- Форма отправки заявки -->
+                        <form id="order-form" class="mb-5">
+                            <div class="mb-3">
+                                <label class="form-label text-light fw-semibold">Ваше имя</label>
+                                <input type="text" id="client-name" class="form-control form-control-custom" placeholder="Иван" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-light fw-semibold">Контакты для связи (VK)</label>
+                                <input type="text" id="client-contact" class="form-control form-control-custom" placeholder="@username" required>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label text-light fw-semibold">Описание вашего проекта / задачи</label>
+                                <textarea id="client-task" class="form-control form-control-custom" rows="4" placeholder="Мне нужен Telegram-бот / сайт для..." required></textarea>
+                            </div>
+                            <button type="submit" id="submit-btn" class="btn btn-flash w-100 py-3 fs-5 shadow">
+                                <i class="fa-brands fa-vk me-2"></i> Отправить заявку в VK
+                            </button>
+                            <div id="form-status" class="mt-3 text-center" style="display: none;"></div>
+                        </form>
+
+                        <div class="text-center mb-4">
+                            <p class="text-secondary mb-2">Или написав нам напрямую в группу:</p>
+                            <a href="https://vk.ru/flash_programstudio" target="_blank" class="vk-btn d-inline-flex align-items-center">
+                                <i class="fa-brands fa-vk fs-4 me-2"></i> Перейти в VK Сообщество
+                            </a>
+                        </div>
+
+                        <!-- Официальный блок реквизитов -->
+                        <div class="p-4 rounded-3 text-start border border-secondary border-opacity-25" style="background-color: rgba(0, 0, 0, 0.2);">
+                            <h5 class="fw-bold text-info mb-3">
+                                <i class="fa-solid fa-building me-2"></i>Юридическая информация и реквизиты
+                            </h5>
+                            <div class="row g-3 text-secondary small">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong class="text-light">Наименование:</strong> ИП Биленко Антон Григорьевич</p>
+                                    <p class="mb-1"><strong class="text-light">ИНН:</strong> 770000000000</p>
+                                    <p class="mb-0"><strong class="text-light">ОГРНИП:</strong> 326770000000000</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong class="text-light">Специализация:</strong> Разработка ПО, ботов и веб-сайтов</p>
+                                    <p class="mb-1"><strong class="text-light">Режим работы:</strong> Пн–Пт, с 10:00 до 19:00 (МСК)</p>
+                                    <p class="mb-0"><strong class="text-light">Связь:</strong> Поддержка через сообщения VK</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Подвал -->
+    <footer class="py-4 text-center text-secondary border-top border-secondary border-opacity-25">
+        <div class="container">
+            <p class="mb-0">© 2026 FLASH Studio. <a href="https://vk.ru/flash_programstudio" target="_blank" class="text-info text-decoration-none ms-1">VK Сообщество</a></p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = "http://localhost:3000/api/data";
+        const ORDER_API_URL = "http://localhost:3000/api/send-order";
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Загрузка данных страницы с сервера
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error("Не удалось получить данные от сервера");
+                }
+                const data = await response.json();
+
+                // Отрисовка заголовков
+                if (data.heroTitle) document.getElementById('hero-title').innerHTML = data.heroTitle;
+                if (data.heroSubtitle) document.getElementById('hero-subtitle').innerText = data.heroSubtitle;
+
+                // Отрисовка Услуг
+                const servicesContainer = document.getElementById('services-container');
+                servicesContainer.innerHTML = '';
+                (data.services || []).forEach(s => {
+                    servicesContainer.innerHTML += `
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card-custom p-4 h-100 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="service-icon"><i class="${s.icon}"></i></div>
+                                    <h3 class="h4 fw-bold mb-3">${s.title}</h3>
+                                    <p class="text-secondary mb-4">${s.desc}</p>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                                    <span class="fs-5 fw-bold text-info">${s.price}</span>
+                                    <a href="#contacts" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                                        Заказать
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // Отрисовка Отзывов
+                const reviewsContainer = document.getElementById('reviews-container');
+                reviewsContainer.innerHTML = '';
+                (data.reviews || []).forEach(r => {
+                    let starsHtml = '';
+                    for (let i = 0; i < (r.rating || 5); i++) {
+                        starsHtml += '<i class="fa-solid fa-star text-warning"></i> ';
+                    }
+
+                    reviewsContainer.innerHTML += `
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card-custom p-4 h-100 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="mb-3">${starsHtml}</div>
+                                    <p class="text-secondary fst-italic mb-4">"${r.text}"</p>
+                                </div>
+                                <div class="d-flex align-items-center pt-3 border-top border-secondary border-opacity-25">
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white fw-bold me-3" style="width: 42px; height: 42px; min-width: 42px;">
+                                        ${r.initials || 'АБ'}
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">${r.author}</h6>
+                                        <small class="text-secondary">${r.category}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+            } catch (err) {
+                console.error('Ошибка загрузки данных с сервера:', err);
+            }
+
+            // Обработка отправки формы заявки в VK
+            const orderForm = document.getElementById('order-form');
+            const statusDiv = document.getElementById('form-status');
+            const submitBtn = document.getElementById('submit-btn');
+
+            orderForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                statusDiv.style.display = 'block';
+                statusDiv.className = 'mt-3 text-info fw-semibold';
+                statusDiv.innerText = 'Отправка заявки...';
+                submitBtn.disabled = true;
+
+                const payload = {
+                    name: document.getElementById('client-name').value.trim(),
+                    contact: document.getElementById('client-contact').value.trim(),
+                    details: document.getElementById('client-task').value.trim()
+                };
+
+                try {
+                    const response = await fetch(ORDER_API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        statusDiv.className = 'mt-3 text-success fw-bold';
+                        statusDiv.innerText = '✅ Заявка успешно отправлена! Скоро свяжемся с вами в VK.';
+                        orderForm.reset();
+                    } else {
+                        throw new Error('Ошибка сервера при отправке');
+                    }
+                } catch (err) {
+                    console.error('Ошибка:', err);
+                    statusDiv.className = 'mt-3 text-danger fw-semibold';
+                    statusDiv.innerText = '❌ Не удалось отправить заявку. Попробуйте ещё раз или напишите нам в VK.';
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
