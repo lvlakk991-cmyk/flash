@@ -7,6 +7,12 @@
       "price": "от 5 000 ₽",
       "icon": "fa-solid fa-code",
       "desc": "Описание..."
+    },
+    {
+      "title": "Новая услуга",
+      "price": "от 5 000 ₽",
+      "icon": "fa-solid fa-code",
+      "desc": "Описание..."
     }
   ],
   "reviews": []
