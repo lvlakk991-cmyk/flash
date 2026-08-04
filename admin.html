@@ -37,7 +37,7 @@
             </div>
         </div>
 
-        <div id="alert-msg" class="alert alert-success" style="display: none;">Данные успешно сохранены в базе данных!</div>
+        <div id="alert-msg" class="alert alert-success" style="display: none;">Данные успешно сохранены на GitHub через сервер!</div>
 
         <!-- Заголовок -->
         <div class="admin-card">
@@ -76,7 +76,6 @@
 
     <script>
         const ADMIN_PASS = "Fl@sh_2026!Sec3re";
-        // Замените этот URL на адрес вашего опубликованного бэкенда (например: https://your-app.onrender.com/api/data)
         const API_URL = "https://flash-sdty.onrender.com/api/data";
 
         let currentSiteData = {
@@ -86,7 +85,7 @@
             reviews: []
         };
 
-        // Загрузка данных из серверной БД
+        // Загрузка данных с сервера
         async function getSiteData() {
             try {
                 const response = await fetch(API_URL);
@@ -94,19 +93,20 @@
                     currentSiteData = await response.json();
                 }
             } catch (error) {
-                console.error("Ошибка при получении данных с сервера/БД:", error);
+                console.error("Ошибка при получении данных с сервера:", error);
             }
             return currentSiteData;
         }
 
-        // Сохранение всей структуры данных в серверную БД
+        // Сохранение данных на сервер с передачей пароля
         async function saveSiteData(data) {
             currentSiteData = data;
             try {
                 const response = await fetch(API_URL, {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "x-admin-password": ADMIN_PASS
                     },
                     body: JSON.stringify(data)
                 });
@@ -114,7 +114,7 @@
                     throw new Error("Не удалось сохранить данные на сервере");
                 }
             } catch (error) {
-                console.error("Ошибка при сохранении в БД:", error);
+                console.error("Ошибка при сохранении:", error);
                 alert("Ошибка сохранения! Проверьте подключение к серверу.");
             }
         }
@@ -259,7 +259,7 @@
         async function addReview() {
             const data = await getSiteData();
             if(!data.reviews) data.reviews = [];
-            data.reviews.push({ author: "Иван С.", initials: "ИС", category: "Заказ бота", rating: 5, text: "Отличный отзыв о вашей работе..." });
+            data.reviews.push({ author: "Иван С.", initials: "ИС", category: "Заказ бота", rating: 5, text: "Отличный отзыв..." });
             await saveSiteData(data);
             renderReviewsAdmin(data.reviews);
         }
